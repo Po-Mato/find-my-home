@@ -1,36 +1,108 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Find My Home
 
-## Getting Started
+지도상 특정 지점을 기준으로 사용자가 설정한 시간(분) 내에 도달 가능한 영역(isochrone)을 시각화하는 Next.js 앱입니다.
 
-First, run the development server:
+## 한줄 요약
+사용자가 중심 지점(예: 집)을 선택하고 시간(분)과 이동 수단을 입력하면, 네이버 지도 API로 해당 시간 내 도달 가능한 지역을 지도에 표시합니다.
+
+## 핵심 기능
+- 중심 지점 선택(마커 또는 주소 입력)
+- 도달 시간(분) 입력
+- 이동 수단 선택(도보/자동차/대중교통 — 구현 범위에 따라 선택 가능)
+- 네이버 지도에 도달 가능 영역 시각화(폴리곤/격자 방식)
+- 반응형 UI
+
+## 요구 사항 체크리스트
+- [x] 네이버 지도 API 사용
+- [x] 중심 지점 기준 도달 가능 영역 표시
+- [x] 사용자가 시간(분) 설정 가능
+- [ ] 서버사이드에서 민감한 API 키 보호 및 호출(권장)
+
+## 입력/출력 계약(간단)
+- 입력: center { lat, lng }, time (분), mode ('walking'|'driving'|'transit')
+- 출력: GeoJSON Polygon 또는 좌표 배열 형태의 도달 가능 영역
+- 오류: 잘못된 입력 또는 API 실패 시 사용자 안내
+
+## 빠른 시작
+프로젝트 루트(이 리포의 `find-my-home` 폴더)에서 다음을 수행하세요.
+
+설치:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+개발 서버 실행:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+브라우저에서 http://localhost:3000 을 열어 앱을 확인하세요.
 
-## Learn More
+## 네이버 지도 API 설정
+1. 네이버 클라우드 플랫폼(NCP)에 로그인하고 Maps JavaScript API(또는 유사 서비스)를 활성화합니다.
+2. JavaScript용 클라이언트 키(Client ID)를 발급받습니다.
+3. 발급한 키를 환경변수로 설정합니다.
 
-To learn more about Next.js, take a look at the following resources:
+예시 `.env.local`:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+NEXT_PUBLIC_NAVER_MAP_CLIENT_ID=your_ncp_client_id
+# (옵션) 서버사이드 전용 비밀 키
+NAVER_CLIENT_SECRET=your_client_secret
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+프론트엔드에서 지도 스크립트를 로드할 때 예:
 
-## Deploy on Vercel
+```html
+<script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=YOUR_CLIENT_ID"></script>
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+보안 주의: 클라이언트용 키는 노출될 수 있으므로, 민감한 길찾기/교통 API 호출은 서버사이드에서 처리하고 비밀 키는 서버에 보관하세요.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 구현 아이디어 (요약)
+네이버 지도는 직접적인 isochrone 엔드포인트를 제공하지 않을 수 있으므로 다음 전략 중 하나를 사용합니다.
+
+1) 샘플링 + 경로 검사(권장)
+  - 중심에서 여러 방향/거리의 샘플 포인트를 생성
+  - 각 포인트에 대해 길찾기 API로 소요 시간을 확인
+  - time 이내인 포인트들을 모아 폴리곤으로 근사
+  - 서버사이드에서 배치/캐싱 처리 권장(요청량 관리)
+
+2) 격자(그리드) 방식
+  - 관심 영역을 격자화하여 각 셀에 대해 소요 시간 판단
+  - 도달 가능한 셀들을 병합하여 영역 생성
+
+3) 외부 isochrone 서비스 사용
+  - OpenRouteService 등 외부 서비스를 연동하고 결과를 네이버 지도에 시각화
+
+## 프론트엔드 요점
+- 지도 렌더링: `Maps JavaScript API`
+- 상태: React 상태 또는 Context
+- 요청 흐름: 사용자 입력 -> (서버) API 호출 -> 좌표 반환 -> 폴리곤 그리기
+
+## 서버(권장)
+- 역할: 민감 키 보호, 여러 API 호출 병합, 결과 캐싱
+- 예시 엔드포인트: `POST /api/isochrone` with { center, time, mode } -> GeoJSON
+
+## 테스트 및 품질
+- 유닛 테스트: 좌표 생성/필터링/폴리곤 생성 유틸 테스트 권장
+- 스모크 테스트: 로컬에서 중심 좌표와 시간 입력으로 시각화 확인
+
+## 엣지 케이스
+- 아주 짧은 시간: 영역이 점으로 보일 수 있음
+- API 호출 한도 초과: 백오프+사용자 안내 필요
+- 대중교통 경로는 시간표/운행 시간에 민감
+
+## 향후 개선 아이디어
+- 실시간 교통 반영
+- 폴리곤 스무딩 및 해상도 조절
+- 사용자 선호(환승 최소화 등)
+
+## 개발자 노트
+- Next.js 앱 디렉터리 구조를 사용합니다 (`app/page.tsx`, `app/layout.tsx` 등).
+- 패키지 매니저: pnpm
+
+## 라이선스
+프로젝트 라이선스를 여기에 기입하세요 (예: MIT).
