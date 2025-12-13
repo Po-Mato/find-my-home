@@ -38,7 +38,7 @@ pnpm install
 pnpm dev
 ```
 
-브라우저에서 http://localhost:3000 을 열어 앱을 확인하세요.
+브라우저에서 http://localhost:8080 을 열어 앱을 확인하세요.
 
 ## 네이버 지도 API 설정
 1. 네이버 클라우드 플랫폼(NCP)에 로그인하고 Maps JavaScript API(또는 유사 서비스)를 활성화합니다.
@@ -48,7 +48,7 @@ pnpm dev
 예시 `.env.local`:
 
 ```
-NEXT_PUBLIC_NAVER_MAP_CLIENT_ID=your_ncp_client_id
+NAVER_CLIENT_ID=your_ncp_client_id
 # (옵션) 서버사이드 전용 비밀 키
 NAVER_CLIENT_SECRET=your_client_secret
 ```
@@ -56,7 +56,7 @@ NAVER_CLIENT_SECRET=your_client_secret
 프론트엔드에서 지도 스크립트를 로드할 때 예:
 
 ```html
-<script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=YOUR_CLIENT_ID"></script>
+<script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=YOUR_CLIENT_ID"></script>
 ```
 
 보안 주의: 클라이언트용 키는 노출될 수 있으므로, 민감한 길찾기/교통 API 호출은 서버사이드에서 처리하고 비밀 키는 서버에 보관하세요.

@@ -1,0 +1,89 @@
+{
+  "metadata": {
+    "workflow_name": "document-project",
+    "workflow_version": "1.2.0",
+    "project_name": "find-my-home",
+    "project_root": "/Users/sjlee/develop/find-my-home",
+    "output_folder": "/Users/sjlee/develop/find-my-home/docs",
+    "user_name": "Sjlee",
+    "communication_language": "Korean",
+    "scan_timestamp": "2025-12-11T12:44:30.918Z"
+  },
+  "status": {
+    "mode": "initial_scan",
+    "scan_level": "comprehensive",
+    "current_step": "completed",
+    "completed_steps": [
+      {"step": "step_1", "status": "completed", "timestamp": "2025-12-11T12:44:30.918Z", "summary": "Workflow initialization and project validation"},
+      {"step": "step_2", "status": "completed", "timestamp": "2025-12-11T12:45:00.000Z", "summary": "Project classification - detected as 'web' type"},
+      {"step": "step_3", "status": "completed", "timestamp": "2025-12-11T12:45:30.000Z", "summary": "Architecture scanning - 3 parts identified"},
+      {"step": "step_4_6", "status": "completed", "timestamp": "2025-12-11T12:46:00.000Z", "summary": "Core documentation generation - index.md, architecture files"},
+      {"step": "step_7_10", "status": "completed", "timestamp": "2025-12-11T12:47:30.000Z", "summary": "Complete documentation generation - all planned documents created"},
+      {"step": "step_12", "status": "completed", "timestamp": "2025-12-11T12:48:00.000Z", "summary": "Workflow finalization and completion"}
+    ],
+    "last_updated": "2025-12-11T12:48:00.000Z"
+  },
+  "project_classification": {
+    "detected_types": ["web"],
+    "primary_type": "web",
+    "confidence": 0.95,
+    "reasoning": "Next.js application with React components, TypeScript, API routes, and Tailwind CSS"
+  },
+  "project_parts": [
+    {
+      "part_id": "frontend",
+      "name": "Frontend Layer",
+      "description": "React components and pages using Next.js App Router",
+      "directory": "app/",
+      "project_type_id": "web"
+    },
+    {
+      "part_id": "backend",
+      "name": "Backend Layer",
+      "description": "Next.js API routes for isochrone calculation and client ID provision",
+      "directory": "app/api/",
+      "project_type_id": "web"
+    },
+    {
+      "part_id": "utilities",
+      "name": "Utilities and Libraries",
+      "description": "Shared business logic for isochrone computation",
+      "directory": "lib/",
+      "project_type_id": "web"
+    }
+  ],
+  "documentation_requirements": {
+    "frontend": {
+      "requires_api_scan": true,
+      "requires_data_models": true,
+      "requires_state_management": true,
+      "requires_ui_components": true,
+      "requires_deployment_config": true
+    }
+  },
+  "codebase_snapshot": {
+    "primary_language": "TypeScript",
+    "frameworks": ["Next.js 15.5", "React 19"],
+    "styling": "Tailwind CSS",
+    "package_manager": "pnpm",
+    "node_version": ">=18",
+    "total_files_scanned": 6,
+    "key_files": [
+      "app/page.tsx",
+      "app/layout.tsx",
+      "app/NaverMap.tsx",
+      "app/SearchForm.tsx",
+      "app/api/isochrone/route.ts",
+      "app/api/client-id/route.ts",
+      "lib/bmad.ts"
+    ]
+  },
+  "findings": {
+    "architecture_summary": "Full-stack Next.js application with client-side map rendering and server-side API routes",
+    "integration_points": [
+      "Naver Maps JavaScript API (client-side)",
+      "Isochrone calculation service (server-side)"
+    ],
+    "deployment_notes": "Vercel-ready Next.js application with environment variable configuration"
+  }
+}
