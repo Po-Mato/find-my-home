@@ -188,7 +188,7 @@ export default function NaverMap({ clientId, params, onLoadingChange, onLocation
         
         if (!geo || !geo.geometry) {
           console.error('❌ [NaverMap.drawIsochrone] 유효하지 않은 GeoJSON:', geo);
-          alert('Isochrone 계산 실패: 유효하지 않은 결과');
+          alert('계산 결과가 유효하지 않습니다. 좌표와 시간을 다시 확인해주세요.');
           return;
         }
         
@@ -196,11 +196,11 @@ export default function NaverMap({ clientId, params, onLoadingChange, onLocation
         console.log('📍 [NaverMap.drawIsochrone] 폴리곤 좌표 개수:', coords.length);
         const path = coords.map((c: any) => new (window as any).naver.maps.LatLng(c[1], c[0]));
         
-        // 폴리곤 색상을 이동수단에 따라 결정
+        // 폴리곤 색상을 이동수단에 따라 결정 (AC-1.2.6)
         const colorMap = {
-          walking: { fill: '#ff7f50', stroke: '#ff4500' },     // 주황색
-          driving: { fill: '#1e90ff', stroke: '#00008b' },     // 파란색
-          transit: { fill: '#50c878', stroke: '#228b22' }      // 초록색
+          walking: { fill: '#ff7f50', stroke: '#ff4500' },     // 주황색 (보행)
+          driving: { fill: '#1e90ff', stroke: '#00008b' },     // 파란색 (자동차)
+          transit: { fill: '#50c878', stroke: '#228b22' }      // 초록색 (대중교통)
         };
         const colors = colorMap[searchParams.mode];
 
@@ -216,9 +216,14 @@ export default function NaverMap({ clientId, params, onLoadingChange, onLocation
         console.log('✅ [NaverMap.drawIsochrone] 폴리곤 생성 완료');
       } catch (err) {
         console.error('❌ [NaverMap.drawIsochrone] Isochrone 계산 오류:', err);
-        alert('도달 영역 계산 실패: ' + (err instanceof Error ? err.message : '알 수 없는 오류'));
+        const errorMsg = err instanceof Error ? err.message : '알 수 없는 오류';
+        const userMessage = errorMsg.includes('type') 
+          ? '입력값이 유효하지 않습니다. 좌표와 시간을 확인해주세요.'
+          : '도달 영역 계산 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+        alert(userMessage);
       } finally {
-        console.log('⏹️ [NaverMap.drawIsochrone] 완료');
+        // finally 블록이 항상 실행되어 로딩 상태 해제 보장 (정상/에러 둘 다)
+        console.log('⏹️ [NaverMap.drawIsochrone] 완료 (로딩 상태 해제)');
         onLoadingChange?.(false);
       }
     }

@@ -45,36 +45,36 @@ describe('Story 1.2: 도달 가능 영역(Isochrone) 시각화', () => {
   });
 
   // ============================================
-  // Task 2: /api/isochrone 엔드포인트 구현
+  // Task 2: Isochrone 계산 로직 (클라이언트)
   // ============================================
-  describe('Task 2: /api/isochrone 엔드포인트', () => {
+  describe('Task 2: Isochrone 계산 로직 (클라이언트)', () => {
     
-    it('AC-1.2.3: API 요청 파라미터 검증 - center, time, mode', () => {
-      const validRequest = {
+    it('AC-1.2.3: 계산 파라미터 검증 - center, time, mode', () => {
+      const validParams = {
         center: { lat: 37.5, lng: 127.0 },
         time: 15,
         mode: 'walking'
       };
       
-      expect(validRequest).toHaveProperty('center');
-      expect(validRequest.center).toHaveProperty('lat');
-      expect(validRequest.center).toHaveProperty('lng');
-      expect(validRequest).toHaveProperty('time');
-      expect(validRequest).toHaveProperty('mode');
+      expect(validParams).toHaveProperty('center');
+      expect(validParams.center).toHaveProperty('lat');
+      expect(validParams.center).toHaveProperty('lng');
+      expect(validParams).toHaveProperty('time');
+      expect(validParams).toHaveProperty('mode');
     });
 
-    it('AC-1.2.4: API 요청 파라미터 타입 확인', () => {
-      const request = {
+    it('AC-1.2.4: 계산 파라미터 타입 확인', () => {
+      const params = {
         center: { lat: 37.5665, lng: 126.9784 },
         time: 30,
         mode: 'driving' as const
       };
 
-      expect(typeof request.center.lat).toBe('number');
-      expect(typeof request.center.lng).toBe('number');
-      expect(typeof request.time).toBe('number');
-      expect(typeof request.mode).toBe('string');
-      expect(['walking', 'driving', 'transit']).toContain(request.mode);
+      expect(typeof params.center.lat).toBe('number');
+      expect(typeof params.center.lng).toBe('number');
+      expect(typeof params.time).toBe('number');
+      expect(typeof params.mode).toBe('string');
+      expect(['walking', 'driving', 'transit']).toContain(params.mode);
     });
   });
 
@@ -162,7 +162,7 @@ describe('Story 1.2: 도달 가능 영역(Isochrone) 시각화', () => {
   describe('Task 3: 폴리곤 렌더링 (NaverMap)', () => {
     
     it('AC-1.2.6: 이동 수단별 색상 매핑 - walking(#ff7f50), driving(#1e90ff), transit(#50c878)', () => {
-      // NaverMap.tsx 라인 220-224에서 색상 정의 확인
+      // NaverMap.tsx에서 색상 정의 확인
       const colorMap = {
         walking: { fill: '#ff7f50', stroke: '#ff4500' },
         driving: { fill: '#1e90ff', stroke: '#00008b' },
@@ -174,8 +174,22 @@ describe('Story 1.2: 도달 가능 영역(Isochrone) 시각화', () => {
       expect(colorMap.transit.fill).toBe('#50c878');
     });
 
+    it('AC-1.2.6: 모든 이동수단 색상이 유효한 16진 색상 코드인지 확인', () => {
+      const colorMap = {
+        walking: { fill: '#ff7f50', stroke: '#ff4500' },
+        driving: { fill: '#1e90ff', stroke: '#00008b' },
+        transit: { fill: '#50c878', stroke: '#228b22' }
+      };
+
+      const hexColorRegex = /^#[0-9A-Fa-f]{6}$/;
+      Object.values(colorMap).forEach(colors => {
+        expect(colors.fill).toMatch(hexColorRegex);
+        expect(colors.stroke).toMatch(hexColorRegex);
+      });
+    });
+
     it('AC-1.2.7: 새로운 isochrone 요청 시 기존 폴리곤 제거', () => {
-      // NaverMap.tsx 라인 202-206: 폴리곤 참조 초기화
+      // 폴리곤 참조 초기화 및 제거 로직
       let polygonRef = { current: { setMap: () => {} } as any };
       
       // 폴리곤 제거 시뮬레이션
@@ -185,6 +199,25 @@ describe('Story 1.2: 도달 가능 영역(Isochrone) 시각화', () => {
       }
       
       expect(polygonRef.current).toBeNull();
+    });
+
+    it('AC-1.2.7: 폴리곤 제거 후 새 폴리곤 생성 시퀀스 검증', () => {
+      let polygonRef = { current: null as any };
+      
+      // 첫 번째 폴리곤 생성
+      polygonRef.current = { setMap: (m: any) => {}, getPath: () => [] };
+      expect(polygonRef.current).not.toBeNull();
+      
+      // 기존 폴리곤 제거
+      if (polygonRef.current) {
+        polygonRef.current.setMap(null);
+        polygonRef.current = null;
+      }
+      expect(polygonRef.current).toBeNull();
+      
+      // 새 폴리곤 생성
+      polygonRef.current = { setMap: (m: any) => {}, getPath: () => [] };
+      expect(polygonRef.current).not.toBeNull();
     });
   });
 

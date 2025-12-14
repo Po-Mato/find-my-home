@@ -37,10 +37,10 @@ apiReference: "https://api.ncloud-docs.com/docs/application-maps-overview"
 - [x] **AC-1.2.3:** 사용자가 "검색" 버튼 클릭 시 `/api/isochrone` 엔드포인트로 요청 전송
 - [x] **AC-1.2.4:** API 요청 파라미터: `{ center: {lat, lng}, time: 분, mode: 'walking'|'driving'|'transit' }`
 - [x] **AC-1.2.5:** API 응답은 GeoJSON Feature(Polygon)로 수신
-- [x] **AC-1.2.6:** 이동 수단별 구분 색상으로 지도에 폴리곤 표시
-  - walking: 주황색 (#ff7f50)
-  - driving: 파란색 (#1e90ff)
-  - transit: 초록색 (#50c878)
+- [x] **AC-1.2.6:** 이동 수단별 구분 색상으로 지도에 폴리곤 표시 (구현 확인)
+  - walking: 주황색 (#ff7f50) ✓ 구현됨
+  - driving: 파란색 (#1e90ff) ✓ 구현됨
+  - transit: 초록색 (#50c878) ✓ 구현됨
 - [x] **AC-1.2.7:** 새로운 isochrone 요청 시 기존 폴리곤 제거
 - [x] **AC-1.2.8:** API 오류 발생 시 사용자에게 알림 메시지 표시
 - [x] **AC-1.2.9:** 로딩 중 상태를 UI에 표시 (스핀너 또는 디스에이블)

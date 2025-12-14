@@ -56,8 +56,8 @@ export default function SearchForm({
       return;
     }
 
-    if (timeNum <= 0) {
-      alert("시간은 1분 이상이어야 합니다.");
+    if (timeNum <= 0 || timeNum > 120) {
+      alert("시간은 1분 이상 120분 이하여야 합니다.");
       return;
     }
 
