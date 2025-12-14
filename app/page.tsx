@@ -7,7 +7,22 @@ import NaverMap from "./NaverMap";
 export default function Home() {
   const [params, setParams] = useState<IsochroneParams | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [lat, setLat] = useState<string>("37.5728");
+  const [lng, setLng] = useState<string>("126.9774");
   const naverMapRef = useRef<any>(null);
+
+  // Task 1-1.3: 지도 클릭 시 좌표 수신 콜백
+  const handleLocationClick = useCallback((coord: { lat: number; lng: number }) => {
+    console.log(`🗺️ [Home] 지도 클릭 — lat: ${coord.lat}, lng: ${coord.lng}`);
+    setLat(coord.lat.toString());
+    setLng(coord.lng.toString());
+  }, []);
+
+  // Task 8: SearchForm의 상태 동기화 콜백 (useCallback으로 메모이제이션)
+  const handleLatLngChange = useCallback((newLat: string, newLng: string) => {
+    setLat(newLat);
+    setLng(newLng);
+  }, []);
 
   // 검색 버튼 클릭 시 호출되는 핸들러
   const handleSearch = useCallback(async (searchParams: IsochroneParams) => {
@@ -29,7 +44,13 @@ export default function Home() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* 검색 폼 (좌측) */}
           <div className="lg:col-span-1">
-            <SearchForm onSearch={handleSearch} isLoading={isLoading} />
+            <SearchForm 
+              onSearch={handleSearch} 
+              isLoading={isLoading}
+              lat={lat}
+              lng={lng}
+              onLatLngChange={handleLatLngChange}
+            />
           </div>
 
           {/* 지도 (우측) */}
@@ -39,6 +60,7 @@ export default function Home() {
                 clientId={process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID ?? ""}
                 params={params}
                 onLoadingChange={setIsLoading}
+                onLocationClick={handleLocationClick}
               />
             </div>
             {!params && (

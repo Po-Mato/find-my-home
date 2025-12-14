@@ -11,14 +11,38 @@ export type IsochroneParams = {
 interface SearchFormProps {
   onSearch: (params: IsochroneParams) => void;
   isLoading?: boolean;
+  lat?: string;
+  lng?: string;
+  onLatLngChange?: (lat: string, lng: string) => void;
 }
 
-export default function SearchForm({ onSearch, isLoading = false }: SearchFormProps) {
-  // 기본값: 서울 중심 (광화문)
+export default function SearchForm({ 
+  onSearch, 
+  isLoading = false,
+  lat: parentLat,
+  lng: parentLng,
+  onLatLngChange 
+}: SearchFormProps) {
+  // Task 1-3.5: 부모의 lat/lng props 받기 (초기값 고정, useEffect에서만 업데이트)
   const [lat, setLat] = useState<string>("37.5728");
   const [lng, setLng] = useState<string>("126.9774");
   const [time, setTime] = useState<string>("15");
   const [mode, setMode] = useState<"walking" | "driving" | "transit">("walking");
+
+  // Task 1-3.4: 부모로부터 받은 lat/lng이 변경되면 동기화
+  React.useEffect(() => {
+    if (parentLat !== undefined) {
+      setLat(parentLat);
+    }
+    if (parentLng !== undefined) {
+      setLng(parentLng);
+    }
+  }, [parentLat, parentLng]);
+
+  // Task 7: 로컬 상태 변경 시 부모에 알림
+  React.useEffect(() => {
+    onLatLngChange?.(lat, lng);
+  }, [lat, lng, onLatLngChange]);
 
   // 사용자가 검색 버튼을 누르면 부모 컴포넌트에 데이터 전달
   const handleSubmit = (e: React.FormEvent) => {
@@ -60,7 +84,9 @@ export default function SearchForm({ onSearch, isLoading = false }: SearchFormPr
           type="number"
           step="0.0001"
           value={lat}
-          onChange={(e) => setLat(e.target.value)}
+          onChange={(e) => {
+            setLat(e.target.value);
+          }}
           disabled={isLoading}
           className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
           placeholder="37.5665"
@@ -77,7 +103,9 @@ export default function SearchForm({ onSearch, isLoading = false }: SearchFormPr
           type="number"
           step="0.0001"
           value={lng}
-          onChange={(e) => setLng(e.target.value)}
+          onChange={(e) => {
+            setLng(e.target.value);
+          }}
           disabled={isLoading}
           className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
           placeholder="126.9784"
