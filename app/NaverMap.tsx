@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import computeIsochroneBMAD from "../lib/bmad";
 
 // M1 Fix: Naver Maps 이벤트 타입 정의
 interface NaverMapClickEvent {
@@ -154,7 +155,7 @@ export default function NaverMap({ clientId, params, onLoadingChange, onLocation
       }
     }
 
-    function drawIsochrone(mapInstance: any) {
+    async function drawIsochrone(mapInstance: any) {
       // params가 있으면 그것을 사용, 없으면 기본값 사용
       const searchParams = params || {
         center: { lat: 37.5665, lng: 126.978 },
@@ -173,58 +174,53 @@ export default function NaverMap({ clientId, params, onLoadingChange, onLocation
 
       onLoadingChange?.(true);
 
-      console.log('🔄 [NaverMap.drawIsochrone] API 호출 시작...');
-      fetch('/api/isochrone', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          center: searchParams.center,
-          time: searchParams.time,
-          mode: searchParams.mode
-        })
-      }).then(res => {
-        console.log('📡 [NaverMap.drawIsochrone] API 응답 상태:', res.status);
-        if (!res.ok) throw new Error(`API 오류: ${res.status}`);
-        return res.json();
-      }).then(geo => {
-        console.log('✅ [NaverMap.drawIsochrone] GeoJSON 수신:', geo);
-        try {
-          if (!geo || !geo.geometry) {
-            console.error('❌ [NaverMap.drawIsochrone] 유효하지 않은 GeoJSON:', geo);
-            return;
-          }
-          const coords = (geo.geometry.coordinates && geo.geometry.coordinates[0]) || [];
-          console.log('📍 [NaverMap.drawIsochrone] 폴리곤 좌표 개수:', coords.length);
-          const path = coords.map((c: any) => new (window as any).naver.maps.LatLng(c[1], c[0]));
-          
-          // 폴리곤 색상을 이동수단에 따라 결정
-          const colorMap = {
-            walking: { fill: '#ff7f50', stroke: '#ff4500' },     // 주황색
-            driving: { fill: '#1e90ff', stroke: '#00008b' },     // 파란색
-            transit: { fill: '#50c878', stroke: '#228b22' }      // 초록색
-          };
-          const colors = colorMap[searchParams.mode];
+      try {
+        console.log('🔄 [NaverMap.drawIsochrone] 클라이언트에서 Isochrone 계산 시작...');
+        
+        // 프론트엔드에서 직접 계산 (API 호출 제거)
+        const geo = await computeIsochroneBMAD(
+          searchParams.center,
+          searchParams.time,
+          searchParams.mode
+        );
 
-          console.log('🎨 [NaverMap.drawIsochrone] 폴리곤 색상:', colors, '이동수단:', searchParams.mode);
-          polygonRef.current = new (window as any).naver.maps.Polygon({
-            map: mapInstance,
-            paths: path,
-            fillColor: colors.fill,
-            fillOpacity: 0.25,
-            strokeColor: colors.stroke,
-            strokeWeight: 2
-          });
-          console.log('✅ [NaverMap.drawIsochrone] 폴리곤 생성 완료');
-        } catch (e) {
-          console.error('❌ [NaverMap.drawIsochrone] 폴리곤 생성 오류:', e);
+        console.log('✅ [NaverMap.drawIsochrone] GeoJSON 생성:', geo);
+        
+        if (!geo || !geo.geometry) {
+          console.error('❌ [NaverMap.drawIsochrone] 유효하지 않은 GeoJSON:', geo);
+          alert('Isochrone 계산 실패: 유효하지 않은 결과');
+          return;
         }
-      }).catch(err => {
-        console.error('❌ [NaverMap.drawIsochrone] 네트워크 또는 API 오류:', err);
-        alert('도달 영역 계산 실패: ' + err.message);
-      }).finally(() => {
+        
+        const coords = (geo.geometry.coordinates && geo.geometry.coordinates[0]) || [];
+        console.log('📍 [NaverMap.drawIsochrone] 폴리곤 좌표 개수:', coords.length);
+        const path = coords.map((c: any) => new (window as any).naver.maps.LatLng(c[1], c[0]));
+        
+        // 폴리곤 색상을 이동수단에 따라 결정
+        const colorMap = {
+          walking: { fill: '#ff7f50', stroke: '#ff4500' },     // 주황색
+          driving: { fill: '#1e90ff', stroke: '#00008b' },     // 파란색
+          transit: { fill: '#50c878', stroke: '#228b22' }      // 초록색
+        };
+        const colors = colorMap[searchParams.mode];
+
+        console.log('🎨 [NaverMap.drawIsochrone] 폴리곤 색상:', colors, '이동수단:', searchParams.mode);
+        polygonRef.current = new (window as any).naver.maps.Polygon({
+          map: mapInstance,
+          paths: path,
+          fillColor: colors.fill,
+          fillOpacity: 0.25,
+          strokeColor: colors.stroke,
+          strokeWeight: 2
+        });
+        console.log('✅ [NaverMap.drawIsochrone] 폴리곤 생성 완료');
+      } catch (err) {
+        console.error('❌ [NaverMap.drawIsochrone] Isochrone 계산 오류:', err);
+        alert('도달 영역 계산 실패: ' + (err instanceof Error ? err.message : '알 수 없는 오류'));
+      } finally {
         console.log('⏹️ [NaverMap.drawIsochrone] 완료');
         onLoadingChange?.(false);
-      });
+      }
     }
 
     // inject callback and script

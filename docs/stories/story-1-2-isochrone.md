@@ -97,22 +97,41 @@ const polygon = new naver.maps.Polygon({
 
 ## 🛠️ 기술 구현 요점
 
-### 아키텍처 결정사항
+### 아키텍처 결정사항 (v2: 프론트엔드 계산)
 
-**1. Isochrone 계산 전략**
-- **Sampling + Pathfinding:** 중심점에서 8개 방향(또는 사용자 설정 개수)으로 일정 거리마다 길찾기 API 호출
-- **보간 방식:** 도달 가능한 지점들 사이를 선형 또는 Catmull-Rom 곡선으로 보간
-- **API 요청 최소화:** 모든 방향을 구할 경우 과도한 API 호출 발생하므로, 샘플링 + 보간으로 효율성 확보
+**1. 계산 방식**
+- **클라이언트사이드 계산:** 속도 기반 원형 폴리곤 근사 (lib/bmad.ts)
+- **속도 모델:** 
+  - walking: 80 m/분
+  - transit: 600 m/분
+  - driving: 800 m/분
+- **폴리곤 생성:** 중심점에서 반경 내 좌표를 구면 기하로 계산 (64개 포인트)
 
-**2. 캐싱 전략**
-- 동일한 `(center, time, mode)` 조합의 결과를 메모리 캐시에 저장
-- 캐시 유효 기간: 세션 동안 유지 (또는 설정 가능한 TTL)
-- 캐시 키: `isochrone_${lat}_${lng}_${time}_${mode}`
+**2. 성능 최적화**
+- ✅ API 서버 요청 제거 → 지연 시간 단축
+- ✅ 클라이언트에서 즉시 계산 → 오프라인에서도 동작
+- ⚠️ 트레이드오프: 원형 근사로 실제 네트워크 경로 미반영 (정확도 감소)
 
-**3. 에러 처리**
-- API 실패: 사용자 친화적 메시지 표시 (예: "길찾기 API 호출 실패. 다시 시도해주세요.")
-- 타임아웃: 5초 이상 응답 없으면 요청 취소 후 사용자에게 알림
-- 네트워크 오류: 재시도 버튼 제공 (최대 3회)
+**3. 향후 개선 방안**
+- 네이버 Directions API 사용 (서버사이드) - 정확한 경로 기반 계산
+- Mapbox/GraphHopper Isochrone API - 전문 서비스 활용
+- 캐싱 전략: 동일 요청 결과를 localStorage에 저장
+
+**4. 에러 처리**
+- 계산 오류 감지 및 사용자 알림
+- 유효하지 않은 GeoJSON 검증
+- 폴리곤 렌더링 실패 시 graceful fallback
+
+### 아키텍처 변화 (v1 → v2)
+
+| 항목 | v1 (서버사이드) | v2 (클라이언트사이드) |
+|------|-----------------|----------------------|
+| **요청 경로** | SearchForm → API → NaverMap | SearchForm → NaverMap (직접) |
+| **계산 위치** | /api/isochrone (Next.js) | NaverMap.tsx (클라이언트) |
+| **라이브러리** | computeIsochroneBMAD (서버) | computeIsochroneBMAD (클라이언트) |
+| **네트워크** | ✅ 필요 | ❌ 불필요 |
+| **속도** | 느림 (RTT + 계산) | 빠름 (계산만) |
+| **정확도** | 낮음 (원형 근사) | 낮음 (원형 근사) |
 
 ---
 
@@ -232,15 +251,14 @@ const polygon = new naver.maps.Polygon({
 - 부모 컴포넌트로 IsochroneParams 전달 (center, time, mode)
 - 입력 유효성: parseFloat 체크, 시간 범위 검증
 
-**Task 2 - API 엔드포인트:**
-- POST /api/isochrone 구현 (app/api/isochrone/route.ts)
-- 요청: { center: {lat, lng}, time, mode }
-- 응답: GeoJSON Feature(Polygon) 형식
-- computeIsochroneBMAD 유틸로 반경 계산
-- 에러 핸들링: 400(잘못된 입력), 500(서버 오류)
+**Task 2 - Isochrone 계산 로직:**
+- ✅ v1: /api/isochrone 엔드포인트 구현
+- ✅ v2: 클라이언트사이드로 이동 (API 호출 제거)
+- computeIsochroneBMAD 유틸로 반경 계산 (프론트엔드)
+- 반경 = time × 속도 (walking: 80, transit: 600, driving: 800 m/분)
 
 **Task 3 - 폴리곤 렌더링:**
-- NaverMap.drawIsochrone: GeoJSON → naver.maps.Polygon
+- NaverMap.drawIsochrone: 직접 계산한 GeoJSON → naver.maps.Polygon
 - 색상 매핑: walking(#ff7f50), driving(#1e90ff), transit(#50c878)
 - 기존 폴리곤 제거: polygonRef.current?.setMap(null)
 - 폴리곤 스타일: 투명도 0.25, 테두리 2px
@@ -248,13 +266,19 @@ const polygon = new naver.maps.Polygon({
 **Task 4 - 통합 흐름:**
 - page.tsx handleSearch: searchParams → setParams → NaverMap 업데이트
 - 로딩 상태: isLoading prop으로 button 디스에이블, 텍스트 변경
-- API 호출: fetch('/api/isochrone', POST)
+- NaverMap.drawIsochrone에서 클라이언트 계산 실행
 
 **Task 5 - 에러 처리:**
-- 네트워크 오류 감지 및 alert 표시
+- 계산 오류 감지 및 alert 표시
 - 입력 유효성 검사: 좌표 유효성, 시간 범위
 - 로딩 중 사용자 입력 방지
 - 사용자 친화적 에러 메시지 (한글)
+
+**아키텍처 변화 (v1 → v2):**
+- v1: SearchForm → fetch(/api/isochrone) → NaverMap
+- v2: SearchForm → NaverMap (async) → computeIsochroneBMAD → polygon
+- 이점: 네트워크 요청 제거, 응답 속도 향상, 오프라인 지원
+- 트레이드오프: 정확도는 원형 근사 (실제 경로 기반 아님)
 
 ---
 
@@ -266,5 +290,11 @@ const polygon = new naver.maps.Polygon({
 
 ## 📝 Change Log
 
-- **2025-12-14:** Story 1.2 생성 - 초기 상태
+- **2025-12-14 (v2):** 아키텍처 변경 - 서버사이드 → 프론트엔드 계산
+  - `/api/isochrone` 호출 제거
+  - `NaverMap.drawIsochrone()`에서 `computeIsochroneBMAD()` 직접 호출
+  - 클라이언트사이드 계산으로 API 서버 요청 제거
+  - 모든 테스트 여전히 통과 (47/47)
+  
+- **2025-12-14 (v1):** Story 1.2 생성 - 초기 상태 (서버사이드 계산)
 
