@@ -10,11 +10,8 @@ interface NaverMapClickEvent {
   };
 }
 
-// Task 4: 마커 아이콘 스타일 (emoji만, 배경 제거)
-const MARKER_ICON_CONTENT = `<div style="font-size: 32px; line-height: 32px;">📍</div>`;
+// Task 4: 마커 아이콘 스타일 (emoji만, 배경 및 여백 완전 제거)
 
-const MARKER_ICON_SIZE = { width: 32, height: 32 };
-const MARKER_ICON_ANCHOR = { x: 16, y: 32 };
 
 export type IsochroneParams = {
   center: { lat: number; lng: number };
@@ -118,16 +115,11 @@ export default function NaverMap({ clientId, params, onLoadingChange, onLocation
                 console.log('🗑️ [NaverMap] 기존 마커 제거됨');
               }
               
-              // Task 4: 새 마커 생성 (상수 사용)
+              // Task 4: 새 마커 생성 (기본 핀 사용 - 배경 없음)
               const marker = new (window as any).naver.maps.Marker({
                 position: new (window as any).naver.maps.LatLng(lat, lng),
                 map: m,
-                title: '시작점',
-                icon: {
-                  content: MARKER_ICON_CONTENT,
-                  size: new (window as any).naver.maps.Size(MARKER_ICON_SIZE.width, MARKER_ICON_SIZE.height),
-                  anchor: new (window as any).naver.maps.Point(MARKER_ICON_ANCHOR.x, MARKER_ICON_ANCHOR.y),
-                },
+                title: '시작점'
               });
               markerRef.current = marker;
               console.log('✅ [NaverMap] 새 마커 생성됨');

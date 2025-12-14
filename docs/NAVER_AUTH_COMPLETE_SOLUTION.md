@@ -23,9 +23,9 @@
 
 **추가할 URL** (3개):
 ```
-http://localhost:8080
-http://localhost:8080/
-http://127.0.0.1:8080
+http://localhost:3000
+http://localhost:3000/
+http://127.0.0.1:3000
 ```
 
 **저장**: [저장] 버튼 클릭
@@ -51,7 +51,7 @@ pnpm dev
 ### 3️⃣ 브라우저 새로고침 (1분)
 
 ```
-1. http://localhost:8080 열기
+1. http://localhost:3000 열기
 2. Cmd + Shift + R 누르기 (강제 새로고침)
 3. Chrome DevTools Console 열기 (Cmd + Option + J)
 4. 아래 메시지 확인:
@@ -71,7 +71,7 @@ pnpm dev
 네이버 지도 Open API 인증이 실패하였습니다.
 Error Code / Error Message: 200 / Authentication Failed
 Client ID: ual79sk3ij
-URI: http://localhost:8080/
+URI: http://localhost:3000/
 ```
 
 **이후 (✅ 정상)**:
@@ -93,9 +93,9 @@ Step 1: NCP 콘솔
 ☐ [수정] 버튼 클릭
 ☐ 웹 서비스 URL 섹션 찾기
 ☐ 다음 3개 URL 추가:
-  ☐ http://localhost:8080
-  ☐ http://localhost:8080/
-  ☐ http://127.0.0.1:8080
+  ☐ http://localhost:3000
+  ☐ http://localhost:3000/
+  ☐ http://127.0.0.1:3000
 ☐ [저장] 클릭
 ☐ "정상적으로 수정되었습니다" 메시지 확인
 
@@ -105,7 +105,7 @@ Step 2: 로컬 캐시 삭제
 ☐ 개발 서버 재시작 (pnpm dev)
 
 Step 3: 브라우저 확인
-☐ http://localhost:8080 열기
+☐ http://localhost:3000 열기
 ☐ Cmd + Shift + R (강제 새로고침)
 ☐ Chrome DevTools 열기 (Cmd + Option + J)
 ☐ Console 탭에서 ✅ 메시지 확인
@@ -120,7 +120,7 @@ Step 3: 브라우저 확인
 **요청 흐름**:
 ```
 1. 브라우저에서 maps.js 스크립트 로드
-2. 요청 출처 (Origin): http://localhost:8080/
+2. 요청 출처 (Origin): http://localhost:3000/
 3. 네이버 서버에서 인증 확인
 4. NCP 콘솔의 "웹 서비스 URL" 화이트리스트와 비교
 5. 일치 → 인증 성공 ✅
@@ -129,15 +129,15 @@ Step 3: 브라우저 확인
 
 **현재 상황**:
 ```
-요청 출처:       http://localhost:8080/
+요청 출처:       http://localhost:3000/
 등록된 도메인:   ??? (비어있거나 다른 도메인만 등록)
 결과:            불일치 → 인증 실패 ❌
 ```
 
 **해결 후**:
 ```
-요청 출처:       http://localhost:8080/
-등록된 도메인:   http://localhost:8080, http://localhost:8080/, http://127.0.0.1:8080
+요청 출처:       http://localhost:3000/
+등록된 도메인:   http://localhost:3000, http://localhost:3000/, http://127.0.0.1:3000
 결과:            일치 → 인증 성공 ✅
 ```
 

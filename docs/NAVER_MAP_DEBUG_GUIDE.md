@@ -111,7 +111,7 @@ curl -I "https://openapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=ual79sk3ij&ca
 
 **테스트**:
 ```bash
-curl -X POST http://localhost:8080/api/isochrone \
+curl -X POST http://localhost:3000/api/isochrone \
   -H "Content-Type: application/json" \
   -d '{"center":{"lat":37.5665,"lng":126.9784},"time":15,"mode":"walking"}' | jq
 ```
@@ -186,20 +186,20 @@ console.log('clientId:', 'ual79sk3ij');
 
 ### 서버 상태 확인
 ```bash
-curl -s http://localhost:8080 | grep -o "<title>.*</title>"
+curl -s http://localhost:3000 | grep -o "<title>.*</title>"
 # 출력: <title>Create Next App</title>
 ```
 
 ### API 엔드포인트 테스트
 ```bash
-curl -X POST http://localhost:8080/api/isochrone \
+curl -X POST http://localhost:3000/api/isochrone \
   -H "Content-Type: application/json" \
   -d '{"center":{"lat":37.5665,"lng":126.9784},"time":15,"mode":"walking"}' | jq '.properties'
 ```
 
 ### 지도 페이지 열기
 ```
-http://localhost:8080
+http://localhost:3000
 ```
 
 ---
@@ -209,7 +209,7 @@ http://localhost:8080
 **현재 설정**:
 - clientId: `ual79sk3ij` (마스킹됨: `ual7****ij`)
 - API 엔드포인트: `https://openapi.map.naver.com/openapi/v3/maps.js`
-- 서버: http://localhost:8080
+- 서버: http://localhost:3000
 - 콘솔 로그 레벨: INFO, WARN, ERROR
 
 **로그 포맷**:

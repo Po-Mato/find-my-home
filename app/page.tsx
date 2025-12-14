@@ -18,12 +18,6 @@ export default function Home() {
     setLng(coord.lng.toString());
   }, []);
 
-  // Task 8: SearchForm의 상태 동기화 콜백 (useCallback으로 메모이제이션)
-  const handleLatLngChange = useCallback((newLat: string, newLng: string) => {
-    setLat(newLat);
-    setLng(newLng);
-  }, []);
-
   // 검색 버튼 클릭 시 호출되는 핸들러
   const handleSearch = useCallback(async (searchParams: IsochroneParams) => {
     setIsLoading(true);
@@ -49,7 +43,6 @@ export default function Home() {
               isLoading={isLoading}
               lat={lat}
               lng={lng}
-              onLatLngChange={handleLatLngChange}
             />
           </div>
 

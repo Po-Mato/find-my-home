@@ -51,7 +51,7 @@ pnpm dev
 
 ### Step 2: 브라우저 열기
 ```
-http://localhost:8080
+http://localhost:3000
 ```
 
 ### Step 3: Chrome DevTools 열기
@@ -136,7 +136,7 @@ grep NEXT_PUBLIC_NAVER_MAP_CLIENT_ID .env.local
 ```
 **테스트**:
 ```bash
-curl -X POST http://localhost:8080/api/isochrone \
+curl -X POST http://localhost:3000/api/isochrone \
   -H "Content-Type: application/json" \
   -d '{"center":{"lat":37.5665,"lng":126.9784},"time":15,"mode":"walking"}' | jq
 ```

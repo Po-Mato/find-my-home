@@ -1,6 +1,6 @@
 # NCP 콘솔에서 웹 서비스 URL 등록하기 (단계별)
 
-**목표**: 네이버 클라우드 플랫폼(NCP) 콘솔에서 Maps Application에 `http://localhost:8080` 도메인 추가
+**목표**: 네이버 클라우드 플랫폼(NCP) 콘솔에서 Maps Application에 `http://localhost:3000` 도메인 추가
 
 ---
 
@@ -89,9 +89,9 @@ https://console.ncloud.com
 **필요한 URL 목록**:
 ```
 개발 환경:
-□ http://localhost:8080
-□ http://localhost:8080/
-□ http://127.0.0.1:8080
+□ http://localhost:3000
+□ http://localhost:3000/
+□ http://127.0.0.1:3000
 
 향후 프로덕션:
 □ https://yourdomain.com  (Vercel 배포 후)
@@ -104,19 +104,19 @@ https://console.ncloud.com
 **방법**:
 1. **[+ URL 추가]** 버튼 클릭
 2. 텍스트 입력 필드 나타남
-3. **첫 번째 URL** 입력: `http://localhost:8080`
+3. **첫 번째 URL** 입력: `http://localhost:3000`
 4. 엔터 또는 [추가] 버튼
-5. **두 번째 URL** 입력: `http://localhost:8080/`
+5. **두 번째 URL** 입력: `http://localhost:3000/`
 6. 엔터 또는 [추가] 버튼
-7. **세 번째 URL** 입력: `http://127.0.0.1:8080`
+7. **세 번째 URL** 입력: `http://127.0.0.1:3000`
 8. 엔터 또는 [추가] 버튼
 
 **최종 상태**:
 ```
 웹 서비스 URL
-├─ http://localhost:8080
-├─ http://localhost:8080/
-├─ http://127.0.0.1:8080
+├─ http://localhost:3000
+├─ http://localhost:3000/
+├─ http://127.0.0.1:3000
 └─ https://yourdomain.com  (기존)
 ```
 
@@ -165,7 +165,7 @@ pnpm dev
 
 ### 브라우저에서 확인
 ```
-1. http://localhost:8080 열기
+1. http://localhost:3000 열기
 2. Cmd + Shift + R (강제 새로고침)
 3. Chrome DevTools > Console 탭 열기 (Cmd + Option + J)
 4. 아래 메시지가 나타나는지 확인:
@@ -209,9 +209,9 @@ Application 상세 정보
 ├─ API Gateway Key: (표시됨)
 ├─ Service: Maps ← 활성화 ✅
 ├─ 웹 서비스 URL: ← 이곳에 URL 추가! 🎯
-│  ├─ http://localhost:8080
-│  ├─ http://localhost:8080/
-│  └─ http://127.0.0.1:8080
+│  ├─ http://localhost:3000
+│  ├─ http://localhost:3000/
+│  └─ http://127.0.0.1:3000
 └─ Status: Active
 ```
 

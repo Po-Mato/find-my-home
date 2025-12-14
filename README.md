@@ -38,7 +38,7 @@ pnpm install
 pnpm dev
 ```
 
-브라우저에서 http://localhost:8080 을 열어 앱을 확인하세요.
+브라우저에서 http://localhost:3000 을 열어 앱을 확인하세요.
 
 ## 네이버 지도 API 설정
 1. 네이버 클라우드 플랫폼(NCP)에 로그인하고 Maps JavaScript API(또는 유사 서비스)를 활성화합니다.

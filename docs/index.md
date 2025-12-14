@@ -251,7 +251,7 @@ echo "NEXT_PUBLIC_NAVER_MAP_CLIENT_ID=your_key" > .env.local
 # 3. 개발 서버 실행
 pnpm dev
 
-# 4. 브라우저에서 http://localhost:8080 열기
+# 4. 브라우저에서 http://localhost:3000 열기
 ```
 
 **코딩 규칙:**

@@ -133,7 +133,7 @@
 
 **예시:**
 ```bash
-curl http://localhost:8080/api/client-id
+curl http://localhost:3000/api/client-id
 ```
 
 #### 응답 (Response)

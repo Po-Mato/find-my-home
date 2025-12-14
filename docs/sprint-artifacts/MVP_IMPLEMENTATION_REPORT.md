@@ -64,7 +64,7 @@
 
 ```bash
 # API 테스트 (실제 응답)
-curl -X POST http://localhost:8080/api/isochrone \
+curl -X POST http://localhost:3000/api/isochrone \
   -H "Content-Type: application/json" \
   -d '{"center":{"lat":37.5665,"lng":126.9784},"time":15,"mode":"walking"}'
 
@@ -237,7 +237,7 @@ NEXT_PUBLIC_NAVER_MAP_CLIENT_ID=ual79sk3ij     # 클라이언트 공개
 # 설치
 pnpm install
 
-# 개발 서버 실행 (http://localhost:8080)
+# 개발 서버 실행 (http://localhost:3000)
 pnpm dev
 
 # 프로덕션 빌드
@@ -249,7 +249,7 @@ pnpm start
 
 ### API 테스트
 ```bash
-curl -X POST http://localhost:8080/api/isochrone \
+curl -X POST http://localhost:3000/api/isochrone \
   -H "Content-Type: application/json" \
   -d '{
     "center": {"lat": 37.5665, "lng": 126.9784},

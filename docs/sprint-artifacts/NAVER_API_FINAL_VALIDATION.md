@@ -49,7 +49,7 @@
 
 ### 요청
 ```bash
-curl -X POST http://localhost:8080/api/isochrone \
+curl -X POST http://localhost:3000/api/isochrone \
   -H "Content-Type: application/json" \
   -d '{
     "center": {"lat": 37.5665, "lng": 126.9784},

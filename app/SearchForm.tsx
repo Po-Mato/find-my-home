@@ -13,15 +13,13 @@ interface SearchFormProps {
   isLoading?: boolean;
   lat?: string;
   lng?: string;
-  onLatLngChange?: (lat: string, lng: string) => void;
 }
 
 export default function SearchForm({ 
   onSearch, 
   isLoading = false,
   lat: parentLat,
-  lng: parentLng,
-  onLatLngChange 
+  lng: parentLng
 }: SearchFormProps) {
   // Task 1-3.5: 부모의 lat/lng props 받기 (초기값 고정, useEffect에서만 업데이트)
   const [lat, setLat] = useState<string>("37.5728");
@@ -29,20 +27,20 @@ export default function SearchForm({
   const [time, setTime] = useState<string>("15");
   const [mode, setMode] = useState<"walking" | "driving" | "transit">("walking");
 
-  // Task 1-3.4: 부모로부터 받은 lat/lng이 변경되면 동기화
+  // 부모로부터 받은 lat/lng이 변경되면 동기화
   React.useEffect(() => {
-    if (parentLat !== undefined) {
+    if (parentLat !== undefined && parentLat !== lat) {
       setLat(parentLat);
     }
-    if (parentLng !== undefined) {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [parentLat]);
+
+  React.useEffect(() => {
+    if (parentLng !== undefined && parentLng !== lng) {
       setLng(parentLng);
     }
-  }, [parentLat, parentLng]);
-
-  // Task 7: 로컬 상태 변경 시 부모에 알림
-  React.useEffect(() => {
-    onLatLngChange?.(lat, lng);
-  }, [lat, lng, onLatLngChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [parentLng]);
 
   // 사용자가 검색 버튼을 누르면 부모 컴포넌트에 데이터 전달
   const handleSubmit = (e: React.FormEvent) => {

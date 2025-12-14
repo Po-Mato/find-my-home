@@ -27,7 +27,7 @@
 
 **설명:** 중심 좌표, 시간, 이동수단을 기반으로 도달 가능 영역을 계산합니다.
 
-**Base URL:** `http://localhost:8080` (로컬) | `https://find-my-home.vercel.app` (프로덕션)
+**Base URL:** `http://localhost:3000` (로컬) | `https://find-my-home.vercel.app` (프로덕션)
 
 #### 요청
 
@@ -133,7 +133,7 @@ Content-Type: application/json
 
 **cURL:**
 ```bash
-curl -X POST http://localhost:8080/api/isochrone \
+curl -X POST http://localhost:3000/api/isochrone \
   -H "Content-Type: application/json" \
   -d '{
     "center": {"lat": 37.5651, "lng": 126.9787},
@@ -167,7 +167,7 @@ if (!response.ok) {
 import requests
 
 response = requests.post(
-  'http://localhost:8080/api/isochrone',
+  'http://localhost:3000/api/isochrone',
   json={
     'center': {'lat': 37.5651, 'lng': 126.9787},
     'time': 15,
@@ -214,7 +214,7 @@ GET /api/client-id HTTP/1.1
 
 **cURL:**
 ```bash
-curl http://localhost:8080/api/client-id
+curl http://localhost:3000/api/client-id
 ```
 
 **JavaScript/Fetch:**

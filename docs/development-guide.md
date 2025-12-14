@@ -58,7 +58,7 @@ NAVER_CLIENT_SECRET=your_client_secret
 pnpm dev
 ```
 
-브라우저에서 [http://localhost:8080](http://localhost:8080) 을 열어 앱을 확인하세요.
+브라우저에서 [http://localhost:3000](http://localhost:3000) 을 열어 앱을 확인하세요.
 
 ---
 

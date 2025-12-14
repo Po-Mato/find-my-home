@@ -5,7 +5,7 @@
 네이버 지도 Open API 인증이 실패하였습니다. 클라이언트 아이디와 웹 서비스 URL을 확인해 주세요.
 Error Code / Error Message: 200 / Authentication Failed
 Client ID: ual79sk3ij
-URI: http://localhost:8080/
+URI: http://localhost:3000/
 ```
 
 **문제**: ✅ Client ID는 정상 → ❌ **도메인/URI 허용 설정 부족**
@@ -21,7 +21,7 @@ URI: http://localhost:8080/
 **현재 상황**:
 ```
 등록된 도메인:  ???
-요청 출처:      http://localhost:8080/
+요청 출처:      http://localhost:3000/
 결과:           일치 ❌ → 인증 실패
 ```
 
@@ -41,14 +41,14 @@ https://console.ncloud.com
 
 ### Step 3: 웹 서비스 URL 추가
 **현재 상황**:
-- "웹 서비스 URL"에 `http://localhost:8080` 이 없을 가능성
+- "웹 서비스 URL"에 `http://localhost:3000` 이 없을 가능성
 
 **필요한 URL들**:
 ```
 개발 환경:
-- http://localhost:8080
-- http://localhost:8080/
-- http://127.0.0.1:8080
+- http://localhost:3000
+- http://localhost:3000/
+- http://127.0.0.1:3000
 
 프로덕션:
 - https://yourdomain.com (Vercel 배포 시)
@@ -59,9 +59,9 @@ https://console.ncloud.com
 2. **웹 서비스 URL** 섹션 찾기
 3. 아래 URL들을 모두 추가:
    ```
-   http://localhost:8080
-   http://localhost:8080/
-   http://127.0.0.1:8080
+   http://localhost:3000
+   http://localhost:3000/
+   http://127.0.0.1:3000
    ```
 4. **저장** 클릭
 
@@ -92,7 +92,7 @@ Ctrl + Shift + R (강제 새로고침)
 - [ ] NCP 콘솔 로그인
 - [ ] Maps Application 찾기
 - [ ] **웹 서비스 URL** 섹션 확인
-  - [ ] `http://localhost:8080` 있는지 확인
+  - [ ] `http://localhost:3000` 있는지 확인
   - [ ] 없으면 추가
 - [ ] **저장** 클릭
 - [ ] 개발 서버 재시작
@@ -131,7 +131,7 @@ console.log(window.naver?.maps ? '✅ 지도 API 로드됨' : '❌ 로드 실패
 NCP 콘솔 > Maps > Application 수정
 ☐ Client ID: ual79sk3ij (확인)
 ☐ Maps 서비스: 활성화 ✅
-☐ 웹 서비스 URL: http://localhost:8080 추가 (필수!)
+☐ 웹 서비스 URL: http://localhost:3000 추가 (필수!)
 ☐ API Gateway 키: 설정 완료
 ```
 
@@ -144,7 +144,7 @@ rm -rf ~/Library/Caches/Google/Chrome
 
 #### 3. 다른 포트로 테스트
 ```bash
-# 기본 포트(8080) 대신 다른 포트 사용
+# 기본 포트(3000) 대신 다른 포트 사용
 pnpm dev -- -p 3001
 ```
 
