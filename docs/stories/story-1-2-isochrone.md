@@ -151,14 +151,14 @@ const polygon = new naver.maps.Polygon({
 
 ---
 
-### Task 2: `/api/isochrone` 서버 엔드포인트 구현
-- [x] **2.1:** `app/api/isochrone/route.ts` 생성
-- [x] **2.2:** POST 요청 수신 및 파라미터 검증 (`center`, `time`, `mode`)
-- [x] **2.3:** 길찾기 API 호출 로직 (BMAD 유틸 사용)
-- [x] **2.4:** 수집된 좌표로 폴리곤 생성 (원형 근사)
-- [x] **2.5:** GeoJSON Feature(Polygon) 형식으로 응답
-- [x] **2.6:** 에러 핸들링 (API 실패, 타임아웃 등)
-- [x] **2.7:** 캐싱 로직 (동일 요청에 대한 빠른 응답)
+### Task 2: Isochrone 계산 로직 (클라이언트)
+- [x] **2.1:** `lib/bmad.ts` - computeIsochroneBMAD 함수 (클라이언트용)
+- [x] **2.2:** 파라미터 검증 (`center`, `time`, `mode`)
+- [x] **2.3:** 속도 기반 반경 계산 (80/600/800 m/분)
+- [x] **2.4:** 반경 내 64개 포인트로 폴리곤 생성
+- [x] **2.5:** GeoJSON Feature(Polygon) 형식 반환
+- [x] **2.6:** 에러 처리 (유효성 검사, try-catch)
+- [x] **2.7:** 프론트엔드에서 직접 호출 (API 불필요)
 
 **테스트:**
 - 정상 요청에 대해 유효한 GeoJSON 응답 확인
@@ -228,14 +228,14 @@ const polygon = new naver.maps.Polygon({
 - [x] 전체 흐름 통합 (Task 4)
 - [x] 에러 처리 및 UX 개선 (Task 5)
 
-### File List - Modified/Created
+### File List - Modified/Created/Deleted
 - `app/SearchForm.tsx` (수정) — time/mode 필드, 유효성 검사 추가
-- `app/api/isochrone/route.ts` (기존) — 파라미터 검증 및 BMAD 호출
-- `app/NaverMap.tsx` (수정) — drawIsochrone 메서드, 폴리곤 렌더링
+- `app/NaverMap.tsx` (수정) — drawIsochrone 메서드, 클라이언트 계산
 - `app/page.tsx` (수정) — handleSearch, onLoadingChange 통합
-- `lib/bmad.ts` (기존) — computeIsochroneBMAD 유틸 함수
+- `lib/bmad.ts` (수정) — computeIsochroneBMAD (클라이언트용)
 - `package.json` (수정) — test 스크립트 추가
 - `__tests__/story-1-2.test.ts` (신규) — 21개 테스트 케이스
+- `app/api/isochrone/` (삭제) — 서버 API 엔드포인트 제거
 
 ### Test Results
 - ✅ Story 1.1: 26/26 PASS
@@ -290,11 +290,15 @@ const polygon = new naver.maps.Polygon({
 
 ## 📝 Change Log
 
+- **2025-12-14 (v2.1):** API 엔드포인트 완전 제거
+  - `app/api/isochrone/route.ts` 삭제
+  - 클라이언트 계산만 사용
+  - 모든 테스트 통과 (47/47)
+  
 - **2025-12-14 (v2):** 아키텍처 변경 - 서버사이드 → 프론트엔드 계산
   - `/api/isochrone` 호출 제거
   - `NaverMap.drawIsochrone()`에서 `computeIsochroneBMAD()` 직접 호출
   - 클라이언트사이드 계산으로 API 서버 요청 제거
-  - 모든 테스트 여전히 통과 (47/47)
   
 - **2025-12-14 (v1):** Story 1.2 생성 - 초기 상태 (서버사이드 계산)
 
