@@ -19,12 +19,13 @@ test('검색 버튼 클릭 시 폼 동작이 정상이다', async ({ page }) => 
   await page.getByLabel('도달 시간 (분)').fill('15');
   await page.getByLabel('이동 수단').selectOption('walking');
 
-  const searchButton = page.getByRole('button', { name: '검색' });
+  const searchButton = page.getByTestId('search-submit');
+  await expect(searchButton).toBeVisible();
   await searchButton.click();
 
-  // 클릭 후 페이지가 정상 상태를 유지하는지 확인
+  // 클릭 후 핵심 UI가 유지되는지 안정적으로 확인
   await expect(page.getByRole('heading', { name: /find my home/i })).toBeVisible();
-  await expect(page.getByRole('button', { name: '검색' })).toBeVisible();
+  await expect(page.getByTestId('search-submit')).toBeVisible();
 });
 
 test('isochrone API가 GeoJSON Polygon을 반환한다 (walking)', async ({ request }) => {
@@ -47,6 +48,12 @@ test('isochrone API가 GeoJSON Polygon을 반환한다 (walking)', async ({ requ
 });
 
 test('isochrone API가 GeoJSON Polygon을 반환한다 (driving)', async ({ request }) => {
+  const hasDrivingSecrets = Boolean(
+    process.env.NAVER_CLIENT_ID && process.env.NAVER_CLIENT_SECRET
+  );
+
+  test.skip(!hasDrivingSecrets, 'NAVER_CLIENT_ID/NAVER_CLIENT_SECRET 미설정으로 skip');
+
   const response = await request.post('/api/isochrone', {
     data: {
       center: { lat: 37.5665, lng: 126.9784 },

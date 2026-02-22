@@ -149,6 +149,7 @@ export default function SearchForm({
       {/* 검색 버튼 */}
       <button
         type="submit"
+        data-testid="search-submit"
         disabled={isLoading}
         className="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-700 disabled:bg-gray-400 transition-colors"
       >
