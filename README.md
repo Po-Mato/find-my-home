@@ -1,5 +1,7 @@
 # Find My Home
 
+![E2E Tests](https://github.com/Po-Mato/find-my-home/actions/workflows/e2e.yml/badge.svg)
+
 지도상 특정 지점을 기준으로 사용자가 설정한 시간(분) 내에 도달 가능한 영역(isochrone)을 시각화하는 Next.js 앱입니다.
 
 ## 한줄 요약
@@ -48,9 +50,9 @@ pnpm dev
 예시 `.env.local`:
 
 ```
-NAVER_CLIENT_ID=your_ncp_client_id
-# (옵션) 서버사이드 전용 비밀 키
-NAVER_CLIENT_SECRET=your_client_secret
+NEXT_PUBLIC_NAVER_MAP_CLIENT_ID=your_ncp_map_client_id
+NAVER_CLIENT_ID=your_ncp_directions_client_id
+NAVER_CLIENT_SECRET=your_ncp_directions_client_secret
 ```
 
 프론트엔드에서 지도 스크립트를 로드할 때 예:
@@ -89,6 +91,24 @@ NAVER_CLIENT_SECRET=your_client_secret
 ## 테스트 및 품질
 - 유닛 테스트: 좌표 생성/필터링/폴리곤 생성 유틸 테스트 권장
 - 스모크 테스트: 로컬에서 중심 좌표와 시간 입력으로 시각화 확인
+- E2E 테스트(Playwright):
+
+```bash
+pnpm test:e2e
+pnpm test:e2e:ui
+```
+
+## CI (GitHub Actions)
+- 워크플로우: `.github/workflows/e2e.yml`
+- 트리거: `push(main)`, `pull_request`
+- 실행 내용: Playwright Chromium 기반 E2E 테스트
+
+### GitHub Secrets 설정
+저장소 Settings → Secrets and variables → Actions 에 아래 값 등록:
+
+- `NEXT_PUBLIC_NAVER_MAP_CLIENT_ID`
+- `NAVER_CLIENT_ID`
+- `NAVER_CLIENT_SECRET`
 
 ## 엣지 케이스
 - 아주 짧은 시간: 영역이 점으로 보일 수 있음

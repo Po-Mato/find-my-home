@@ -175,16 +175,32 @@ export default function NaverMap({ clientId, params, onLoadingChange, onLocation
       onLoadingChange?.(true);
 
       try {
-        console.log('🔄 [NaverMap.drawIsochrone] 클라이언트에서 Isochrone 계산 시작...');
-        
-        // 프론트엔드에서 직접 계산 (API 호출 제거)
-        const geo = await computeIsochroneBMAD(
-          searchParams.center,
-          searchParams.time,
-          searchParams.mode
-        );
+        console.log('🔄 [NaverMap.drawIsochrone] /api/isochrone 호출 시작...');
 
-        console.log('✅ [NaverMap.drawIsochrone] GeoJSON 생성:', geo);
+        let geo: any;
+        try {
+          const res = await fetch('/api/isochrone', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(searchParams),
+          });
+
+          if (!res.ok) {
+            const errBody = await res.text();
+            throw new Error(`API 오류(${res.status}): ${errBody}`);
+          }
+
+          geo = await res.json();
+          console.log('✅ [NaverMap.drawIsochrone] 서버 GeoJSON 생성:', geo);
+        } catch (apiError) {
+          console.warn('⚠️ [NaverMap.drawIsochrone] 서버 API 실패, BMAD 폴백 사용:', apiError);
+          geo = await computeIsochroneBMAD(
+            searchParams.center,
+            searchParams.time,
+            searchParams.mode
+          );
+          console.log('✅ [NaverMap.drawIsochrone] BMAD 폴백 GeoJSON 생성:', geo);
+        }
         
         if (!geo || !geo.geometry) {
           console.error('❌ [NaverMap.drawIsochrone] 유효하지 않은 GeoJSON:', geo);
