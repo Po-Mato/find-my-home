@@ -66,3 +66,18 @@ test('isochrone API가 GeoJSON Polygon을 반환한다 (driving)', async ({ requ
   expect(body.properties?.engine).toBeTruthy();
   expect(body.properties?.confidence).toBeGreaterThan(0);
 });
+
+// 시나리오: mode 값이 허용 목록(walking|driving|transit) 밖이면 400 에러를 반환해야 한다.
+test('isochrone API는 잘못된 mode 요청을 400으로 거절한다', async ({ request }) => {
+  const response = await request.post('/api/isochrone', {
+    data: {
+      center: { lat: 37.5665, lng: 126.9784 },
+      time: 15,
+      mode: 'bicycle',
+    },
+  });
+
+  expect(response.status()).toBe(400);
+  const body = await response.json();
+  expect(body.error).toContain('mode는 walking|driving|transit');
+});
