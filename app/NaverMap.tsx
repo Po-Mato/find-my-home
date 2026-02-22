@@ -66,22 +66,25 @@ export default function NaverMap({ clientId, params, onLoadingChange, onLocation
         console.warn('⚠️ [NaverMap] DOM 요소를 찾을 수 없습니다.');
         return null;
       }
-      if ((el as any).__naver_map) {
+
+      const mapHostEl = el as HTMLDivElement & { __naver_map?: any };
+      if (mapHostEl.__naver_map) {
         console.log('✅ [NaverMap] 캐시된 지도 인스턴스 반환');
-        return (el as any).__naver_map;
+        return mapHostEl.__naver_map;
       }
-      if (!(window as any).naver || !(window as any).naver.maps) {
+
+      const naver = (window as any).naver;
+      if (!naver || !naver.maps) {
         console.warn('⚠️ [NaverMap] naver.maps API가 아직 로드되지 않았습니다. (시도 #' + attempts + ')');
         return null;
       }
+
       console.log('✅ [NaverMap] naver.maps 감지됨 — 지도 인스턴스 생성 중...');
-      // @ts-ignore
-      const m = new (window as any).naver.maps.Map(el, {
-        center: new (window as any).naver.maps.LatLng(37.5665, 126.978),
+      const m = new naver.maps.Map(el, {
+        center: new naver.maps.LatLng(37.5665, 126.978),
         zoom: 13,
       });
-      // @ts-ignore
-      el.__naver_map = m;
+      mapHostEl.__naver_map = m;
       console.log('✅ [NaverMap] 지도 인스턴스 생성 완료');
       return m;
     }
