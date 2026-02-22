@@ -46,3 +46,6 @@ next-env.d.ts
 .vscode
 .github
 v4-backup
+# Playwright artifacts
+test-results/
+playwright-report/
