@@ -1,19 +1,20 @@
 "use client";
 
-import React, { useRef, useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import SearchForm, { IsochroneParams } from "./SearchForm";
 import NaverMap from "./NaverMap";
 
 export default function Home() {
   const [params, setParams] = useState<IsochroneParams | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [lat, setLat] = useState<string>("37.5728");
-  const [lng, setLng] = useState<string>("126.9774");
-  const naverMapRef = useRef<any>(null);
+  // UX 개선: 기본값 변경 (광화문 중심) - 37.5701, 126.9777
+  const [lat, setLat] = useState<string>("37.5701");
+  const [lng, setLng] = useState<string>("126.9777");
 
   // Task 1-1.3: 지도 클릭 시 좌표 수신 콜백
   const handleLocationClick = useCallback((coord: { lat: number; lng: number }) => {
     console.log(`🗺️ [Home] 지도 클릭 — lat: ${coord.lat}, lng: ${coord.lng}`);
+    // UX 개선: 지도 클릭 시 SearchForm의 입력 필드에 즉시 반영
     setLat(coord.lat.toString());
     setLng(coord.lng.toString());
   }, []);
@@ -41,7 +42,7 @@ export default function Home() {
             <SearchForm 
               onSearch={handleSearch} 
               isLoading={isLoading}
-              lat={lat}
+              lat={lat} // Lat/Lng를 SearchForm으로 전달하여 동기화 유도
               lng={lng}
             />
           </div>

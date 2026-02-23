@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export type IsochroneParams = {
   center: { lat: number; lng: number };
@@ -21,26 +21,24 @@ export default function SearchForm({
   lat: parentLat,
   lng: parentLng
 }: SearchFormProps) {
-  // Task 1-3.5: 부모의 lat/lng props 받기 (초기값 고정, useEffect에서만 업데이트)
-  const [lat, setLat] = useState<string>("37.5728");
-  const [lng, setLng] = useState<string>("126.9774");
+  // UX 개선: 기본값을 광화문 중심으로 통일 (37.5701, 126.9777)
+  const [lat, setLat] = useState<string>("37.5701");
+  const [lng, setLng] = useState<string>("126.9777");
   const [time, setTime] = useState<string>("15");
   const [mode, setMode] = useState<"walking" | "driving" | "transit">("walking");
 
-  // 부모로부터 받은 lat/lng이 변경되면 동기화
-  React.useEffect(() => {
+  // UX 개선: 부모로부터 받은 lat/lng이 변경되면 내부 state를 즉시 동기화
+  useEffect(() => {
     if (parentLat !== undefined && parentLat !== lat) {
       setLat(parentLat);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parentLat]);
+  }, [parentLat, lat]); 
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (parentLng !== undefined && parentLng !== lng) {
       setLng(parentLng);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parentLng]);
+  }, [parentLng, lng]); 
 
   // 사용자가 검색 버튼을 누르면 부모 컴포넌트에 데이터 전달
   const handleSubmit = (e: React.FormEvent) => {

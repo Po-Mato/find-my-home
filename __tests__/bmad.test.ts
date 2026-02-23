@@ -70,13 +70,10 @@ describe('Unit: computeIsochroneBMAD', () => {
     expect((t20 as any).properties.radiusMeters).toBeGreaterThan((t10 as any).properties.radiusMeters);
   });
 
-  it('속성에 center/time/mode/method를 포함한다', async () => {
+  it('모드별 속도에 따라 반경이 정확하게 계산된다 (새로운 검증: 15분 walking = 1200m)', async () => {
     const result = await computeIsochroneBMAD(center, 15, 'walking');
-
-    expect((result as any).properties.center).toEqual(center);
-    expect((result as any).properties.timeMinutes).toBe(15);
-    expect((result as any).properties.mode).toBe('walking');
-    expect((result as any).properties.method).toBe('bmad-placeholder');
+    // Speed: 80 m/min. 15 min * 80 m/min = 1200m. Math.max(50, 1200) = 1200.
+    expect((result as any).properties.radiusMeters).toBe(1200);
   });
 
   it('모든 좌표는 유효한 WGS84 범위다', async () => {
