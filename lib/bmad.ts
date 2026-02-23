@@ -4,6 +4,9 @@ export type BMADOptions = {
   points?: number;
 };
 
+// Earth Radius in meters (WGS84 standard)
+export const EARTH_RADIUS_METERS = 6378137;
+
 // Simple fallback implementation used as a placeholder for the BMAD method.
 // Currently this generates a circular polygon approximation based on a
 // radius derived from time and mode. Replace the implementation with the
@@ -21,15 +24,14 @@ export async function computeIsochroneBMAD(
   const radiusMeters = Math.max(50, timeMinutes * speed);
 
   const coords: Array<[number, number]> = [];
-  const R = 6378137; // Earth radius in meters
-  const lat = (center.lat * Math.PI) / 180;
+  const latRad = (center.lat * Math.PI) / 180;
   for (let i = 0; i < points; i++) {
     const theta = (i / points) * (2 * Math.PI);
     const dx = radiusMeters * Math.cos(theta);
     const dy = radiusMeters * Math.sin(theta);
-    const dLat = dy / R;
-    const dLng = dx / (R * Math.cos(lat));
-    const newLat = (lat + dLat) * (180 / Math.PI);
+    const dLat = dy / EARTH_RADIUS_METERS;
+    const dLng = dx / (EARTH_RADIUS_METERS * Math.cos(latRad));
+    const newLat = (latRad + dLat) * (180 / Math.PI);
     const newLng = ((center.lng * Math.PI) / 180 + dLng) * (180 / Math.PI);
     coords.push([newLng, newLat]);
   }
