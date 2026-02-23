@@ -3,6 +3,10 @@ import computeIsochroneBMAD from "@/lib/bmad";
 
 type Mode = "walking" | "driving" | "transit";
 
+// --- 개선: 허용 모드를 상수로 정의하여 코드 일관성 유지 ---
+const ALLOWED_MODES: Mode[] = ["walking", "driving", "transit"];
+// ---------------------------------------------------------
+
 type IsochroneRequest = {
   center: { lat: number; lng: number };
   time: number;
@@ -110,9 +114,11 @@ export async function POST(req: NextRequest) {
     if (typeof time !== "number" || !Number.isFinite(time) || time < 1 || time > 120) {
       return NextResponse.json({ error: "time은 1~120(분)이어야 합니다." }, { status: 400 });
     }
-    if (mode !== "walking" && mode !== "driving" && mode !== "transit") {
-      return NextResponse.json({ error: "mode는 walking|driving|transit 이어야 합니다." }, { status: 400 });
+    // --- 개선: ALLOWED_MODES 사용 ---
+    if (!ALLOWED_MODES.includes(mode as Mode)) {
+      return NextResponse.json({ error: `mode는 ${ALLOWED_MODES.join('|')} 이어야 합니다.` }, { status: 400 });
     }
+    // ----------------------------------
 
     // 현재는 네이버 Directions(자동차) 기반 정밀 계산 지원
     // walking/transit은 기존 BMAD로 폴백
